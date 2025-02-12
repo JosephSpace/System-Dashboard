@@ -1,4 +1,4 @@
-# Cross-Platform System Dashboard
+# System Dashboard
 
 ![Adsız tasarım](https://github.com/user-attachments/assets/41c028f1-0705-4a80-bf4d-187f07c8aa1b)
 
