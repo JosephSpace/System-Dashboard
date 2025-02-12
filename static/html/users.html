@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kullanıcı Kontrolü</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <style>
+        .container {
+            padding: 20px;
+        }
+        .user-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .users-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .users-table th, .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .change-pwd-btn {
+            background: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Sistem Yönetimi</div>
+        <div class="nav-links">
+            <a href="/html/app.html" class="nav-link">Sistem Monitör</a>
+            <a href="/html/remote.html" class="nav-link">Uzak Sistem</a>
+            <a href="/html/users.html" class="nav-link active">Kullanıcı Kontrolü</a>
+            <a href="/html/ssh.html" class="nav-link">SSH Terminal</a>
+            <button onclick="logout()" class="nav-link logout-btn">Çıkış Yap</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="user-form">
+            <h2>Yeni Kullanıcı Ekle</h2>
+            <div class="form-group">
+                <label>Kullanıcı Adı:</label>
+                <input type="text" id="newUsername" required>
+            </div>
+            <div class="form-group">
+                <label>Şifre:</label>
+                <input type="password" id="newPassword" required>
+            </div>
+            <div class="form-group">
+                <label>Rol:</label>
+                <select id="newRole">
+                    <option value="user">Kullanıcı</option>
+                    <option value="admin">Yönetici</option>
+                </select>
+            </div>
+            <button onclick="addUser()" class="add-btn">Kullanıcı Ekle</button>
+        </div>
+
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>Kullanıcı Adı</th>
+                    <th>Rol</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                <!-- Kullanıcılar buraya JavaScript ile eklenecek -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Şifre Değiştir</h2>
+            <div class="form-group">
+                <label>Yeni Şifre:</label>
+                <input type="password" id="newPasswordChange" required>
+            </div>
+            <div class="form-group">
+                <label>Şifre Tekrar:</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+            <button onclick="changePassword()" class="add-btn">Şifreyi Değiştir</button>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklenmeden önce yetki kontrolü
+        (function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'admin') {
+                window.location.href = '/html/app.html';
+            }
+        })();
+
+        // Kullanıcı ekleme fonksiyonu
+        async function addUser() {
+            console.log('addUser fonksiyonu çalıştı'); // Debug log
+
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+
+            if (!username || !password) {
+                alert('Kullanıcı adı ve şifre boş olamaz!');
+                return;
+            }
+
+            try {
+                console.log('API isteği gönderiliyor...'); // Debug log
+                const response = await fetch('http://localhost:5000/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        role: role
+                    })
+                });
+
+                console.log('API yanıtı alındı:', response); // Debug log
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Hata: ' + data.error);
+                    return;
+                }
+
+                // Formu temizle
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('newRole').value = 'user';
+
+                // Kullanıcı listesini güncelle
+                getUsers();
+                
+                alert('Kullanıcı başarıyla eklendi!');
+
+            } catch (error) {
+                console.error('Kullanıcı ekleme hatası:', error);
+                alert('Kullanıcı eklenirken bir hata oluştu!');
+            }
+        }
+
+        // Kullanıcıları getir
+        async function getUsers() {
+            try {
+                const response = await fetch('http://localhost:5000/api/users');
+                const data = await response.json();
+
+                const userTable = document.getElementById('userTable');
+                userTable.innerHTML = '';
+
+                data.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <button onclick="deleteUser('${user.username}')" class="delete-btn">Sil</button>
+                            <button onclick="showChangePasswordModal('${user.username}')" class="change-pwd-btn">Şifre Değiştir</button>
+                        </td>
+                    `;
+                    userTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Kullanıcıları getirme hatası:', error);
+            }
+        }
+
+        // Kullanıcı silme
+        async function deleteUser(username) {
+            if (!confirm(`${username} kullanıcısını silmek istediğinizden emin misiniz?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${username}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Hata: ' + data.error);
+                    return;
+                }
+
+                getUsers();
+                alert('Kullanıcı başarıyla silindi!');
+
+            } catch (error) {
+                console.error('Kullanıcı silme hatası:', error);
+                alert('Kullanıcı silinirken bir hata oluştu!');
+            }
+        }
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Sayfa yüklendi'); // Debug log
+            getUsers();
+        });
+
+        // Çıkış yapma fonksiyonu
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/html/login.html';
+        }
+
+        let currentUsername = ''; // Şifresi değiştirilecek kullanıcı
+
+        function showChangePasswordModal(username) {
+            currentUsername = username;
+            const modal = document.getElementById('passwordModal');
+            const span = document.getElementsByClassName('close')[0];
+            
+            modal.style.display = 'block';
+            
+            // Modal kapatma olayları
+            span.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            // Input alanlarını temizle
+            document.getElementById('newPasswordChange').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        async function changePassword() {
+            const newPassword = document.getElementById('newPasswordChange').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!newPassword || !confirmPassword) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${currentUsername}/password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        newPassword: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Hata: ' + data.error);
+                    return;
+                }
+
+                // Modalı kapat
+                document.getElementById('passwordModal').style.display = 'none';
+                alert('Şifre başarıyla değiştirildi!');
+
+            } catch (error) {
+                console.error('Şifre değiştirme hatası:', error);
+                alert('Şifre değiştirilirken bir hata oluştu!');
+            }
+        }
+    </script>
+</body>
+</html> 
