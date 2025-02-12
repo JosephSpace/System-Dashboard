@@ -14,10 +14,6 @@ All packages operate by importing Flask, allowing you to monitor the following d
 * Disk Used/Total
 * User Control
 
-This dashboard is especially useful if placed on a secondary screen, such as another monitor, or a connected iPad running the [Duet](http://www.duetdisplay.com) app.
-
-![](docs/duet.png)
-
 ## Setup
 
 `pip install flask` installs the Flask framework, allowing you to develop web applications and APIs in Python.
