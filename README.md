@@ -1,4 +1,4 @@
-# System Dashboard
+![image](https://github.com/user-attachments/assets/33fc52eb-857c-4dfa-9a6d-c3716922f9e3)# System Dashboard
 
 ![Adsız tasarım](https://github.com/user-attachments/assets/41c028f1-0705-4a80-bf4d-187f07c8aa1b)
 
@@ -34,6 +34,38 @@ python python/server.py
 
 After the server starts, open any browser window and type the following URL: `http://127.0.0.1:5000/html/login.html`. You will then be redirected to the homepage.
 
+## Project Structure
+
+### Project Directory Structure
+
+```
+data/                  # Directory containing data files
+├── users.json         # JSON file containing user information
+
+python/                # Directory containing Python files
+├── database.py        # Functions for database operations
+├── users.py           # Functions related to user management
+├── server.py          # Server settings for the Flask application
+└── ssh_handler.py     # Functions to execute SSH commands
+
+static/                # Directory containing static files
+├── css/               # CSS files
+│   ├── navbar.css     # Styles for the navigation bar
+│   ├── style.css      # General style settings
+│   └── users.css      # Styles for the user management page
+├── html/              # HTML files
+│   ├── app.html       # Main application page
+│   ├── login.html     # Login page
+│   └── remote.html    # Remote system connection page
+└── js/                # JavaScript files
+    ├── login.js       # JavaScript for login operations
+    ├── navbar.js      # JavaScript for the navigation bar
+    ├── remote.js      # JavaScript related to remote systems
+    ├── system.js      # JavaScript to update system metrics
+    ├── users.js       # JavaScript for user management
+    └── ssh.js         # JavaScript for SSH terminal
+``` 
+
 ## Maintainer
 
 https://github.com/JosephSpace
@@ -42,6 +74,13 @@ https://github.com/JosephSpace
 
 https://github.com/JosephSpace/System-Board 
 
+## Contact
+
+- İnstagram: https://www.instagram.com/f3rrkan/
+- LinkedIn: https://www.linkedin.com/in/yusuf-aşkın-56015b232/
+- Mail: yusufaliaskin@gmail.com
+
+---
 ## License
 
 MIT
