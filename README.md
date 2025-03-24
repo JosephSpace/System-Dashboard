@@ -76,7 +76,7 @@ https://github.com/JosephSpace/System-Board
 
 ## Contact
 
-- İnstagram: https://www.instagram.com/f3rrkan/
+- İnstagram: https://www.instagram.com/joseph.ddf/
 - LinkedIn: https://www.linkedin.com/in/yusuf-aşkın-56015b232/
 - Mail: yusufaliaskin@gmail.com
 
