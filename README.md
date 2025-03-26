@@ -1,5 +1,3 @@
-![image](https://github.com/user-attachments/assets/33fc52eb-857c-4dfa-9a6d-c3716922f9e3)# System Dashboard
-
 ![Adsız tasarım](https://github.com/user-attachments/assets/41c028f1-0705-4a80-bf4d-187f07c8aa1b)
 
 This application provides visibility into all files and active device data on your system. It also allows you to access files available across your network. Furthermore, you can manage users attempting to log into the server. All data on the device can be viewed on both Windows and Linux systems.
