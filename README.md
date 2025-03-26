@@ -32,8 +32,6 @@ python python/server.py
 
 After the server starts, open any browser window and type the following URL: `http://127.0.0.1:5000/html/login.html`. You will then be redirected to the homepage.
 
-## Project Structure
-
 ### Project Directory Structure
 
 ```
